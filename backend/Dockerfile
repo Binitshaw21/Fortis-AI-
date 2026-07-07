@@ -18,8 +18,10 @@ COPY . .
 RUN python manage.py migrate
 RUN python manage.py collectstatic --noinput
 
-# Expose port 7860 for Hugging Face
-EXPOSE 7860
+# Default port for local / Hugging Face (Railway overrides this dynamically)
+ENV PORT=7860
+EXPOSE $PORT
 
-# Start Gunicorn on port 7860
-CMD ["gunicorn", "--bind", "0.0.0.0:7860", "fortis_project.wsgi:application"]
+# Change the shell form to allow variable expansion
+CMD gunicorn fortis_project.wsgi:application --bind 0.0.0.0:$PORT
+
