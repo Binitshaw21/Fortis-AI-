@@ -1,0 +1,754 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fortis AI | Autonomous Governance & Security Copilot for the Agent Economy{% endblock %}
+
+{% block content %}
+
+<!-- ===== LANDING PAGE STYLES ===== -->
+<style>
+/* Particle canvas behind hero */
+#particle-canvas {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 0; opacity: 0.35;
+}
+
+/* Animated gradient orbs */
+.orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); pointer-events: none;
+  animation: orbFloat 12s ease-in-out infinite;
+}
+.orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(124,58,237,0.45), transparent); top: -180px; left: -120px; animation-delay: 0s; }
+.orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(245,158,11,0.3), transparent); top: 50px; right: -100px; animation-delay: -4s; }
+.orb-3 { width: 350px; height: 350px; background: radial-gradient(circle, rgba(14,165,233,0.3), transparent); bottom: -100px; left: 50%; animation-delay: -8s; }
+@keyframes orbFloat { 0%,100%{transform:translate(0,0) scale(1);} 33%{transform:translate(30px,-20px) scale(1.05);} 66%{transform:translate(-20px,30px) scale(0.95);} }
+
+/* Hero section */
+.landing-hero {
+  position: relative; min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  padding: 4rem 1.5rem 5rem; overflow: hidden;
+}
+
+/* Glowing grid lines */
+.hero-grid {
+  position: absolute; inset: 0; z-index: 0;
+  background-image: linear-gradient(rgba(124,58,237,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+}
+
+/* Typing text animation */
+.typing-container { display: inline-block; position: relative; }
+.typed-cursor { display: inline-block; width: 3px; height: 1em; background: var(--accent-amber); margin-left: 4px; animation: blink 1s step-end infinite; vertical-align: middle; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+/* Counter animation */
+.counter-val { display: inline-block; }
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  color: var(--text-muted); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+  animation: scrollBounce 2.5s ease-in-out infinite;
+}
+.scroll-indicator .arrow { width: 20px; height: 20px; border-right: 2px solid rgba(167,139,250,0.6); border-bottom: 2px solid rgba(167,139,250,0.6); transform: rotate(45deg); animation: scrollArrow 1.5s ease infinite; }
+@keyframes scrollBounce { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(8px);} }
+@keyframes scrollArrow { 0%,100%{opacity:0.3;} 50%{opacity:1;} }
+
+/* Feature cards with hover glow */
+.feature-card {
+  background: rgba(7,8,15,0.7); border: 1px solid rgba(124,58,237,0.2);
+  border-radius: 1.25rem; padding: 2.25rem; position: relative; overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16,1,0.3,1); cursor: default;
+  backdrop-filter: blur(20px);
+}
+.feature-card::before {
+  content: ''; position: absolute; inset: 0; border-radius: 1.25rem;
+  background: radial-gradient(circle at var(--mouse-x,50%) var(--mouse-y,50%), rgba(124,58,237,0.15), transparent 70%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.feature-card:hover::before { opacity: 1; }
+.feature-card:hover { border-color: rgba(124,58,237,0.5); transform: translateY(-6px) scale(1.01); box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(124,58,237,0.12); }
+.feature-card .card-icon { font-size: 2.5rem; margin-bottom: 1.25rem; display: block; filter: drop-shadow(0 0 12px rgba(124,58,237,0.4)); }
+
+/* Process flow steps */
+.flow-step {
+  display: flex; align-items: flex-start; gap: 1.5rem;
+  padding: 1.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+  opacity: 0; transform: translateX(-30px); transition: all 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.flow-step.visible { opacity: 1; transform: translateX(0); }
+.flow-step:last-child { border-bottom: none; }
+.step-num {
+  width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent-violet), var(--accent-amber));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; font-weight: 900; color: #fff;
+  box-shadow: 0 0 20px rgba(124,58,237,0.4);
+}
+.step-connector { position: absolute; left: 22px; top: 44px; bottom: 0; width: 1px; background: linear-gradient(180deg, rgba(124,58,237,0.5), transparent); }
+
+/* Testimonial / use-case cards */
+.usecase-card {
+  background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(14,165,233,0.06));
+  border: 1px solid rgba(124,58,237,0.2); border-radius: 1rem; padding: 1.75rem;
+  transition: all 0.3s ease;
+}
+.usecase-card:hover { border-color: rgba(124,58,237,0.45); transform: translateY(-4px); box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
+
+/* Token flow animation */
+.token-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem; border-radius: 50px; font-size: 0.78rem; font-weight: 700; }
+.token-go { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.5); color: #10b981; }
+.token-nogo { background: rgba(244,63,94,0.15); border: 1px solid rgba(244,63,94,0.5); color: #f43f5e; }
+
+/* Section entrance animations */
+.reveal-section { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal-section.visible { opacity: 1; transform: translateY(0); }
+
+/* Glow pulse on headings */
+.glow-heading { animation: headingGlow 4s ease-in-out infinite; }
+@keyframes headingGlow { 0%,100%{filter:drop-shadow(0 0 20px rgba(167,139,250,0.2));} 50%{filter:drop-shadow(0 0 40px rgba(167,139,250,0.5));} }
+
+/* Animated border gradient */
+.border-animated {
+  position: relative; background: rgba(7,8,15,0.8); border-radius: 1.25rem;
+  padding: 2px;
+  background-image: linear-gradient(rgba(7,8,15,0.8), rgba(7,8,15,0.8)),
+    linear-gradient(135deg, var(--accent-violet), var(--accent-amber), var(--accent-sky), var(--accent-violet));
+  background-origin: border-box; background-clip: padding-box, border-box;
+  animation: borderSpin 4s linear infinite;
+}
+@keyframes borderSpin { 0%{background-position:0% 50%;} 100%{background-position:200% 50%;} }
+
+/* Pricing badge */
+.pricing-val { font-size: 3.5rem; font-weight: 900; background: linear-gradient(135deg, #f59e0b, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+/* Network badge row */
+.network-badge { display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.4rem 1.1rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 50px; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; transition: all 0.2s; }
+.network-badge:hover { border-color: rgba(167,139,250,0.4); color: #fff; background: rgba(124,58,237,0.12); }
+
+/* CTA section glow */
+.cta-section { background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(124,58,237,0.15) 0%, transparent 70%); }
+
+/* Terminal type-in animation */
+.terminal-line { opacity: 0; animation: typeIn 0.3s ease forwards; }
+@keyframes typeIn { to{opacity:1;} }
+</style>
+
+<!-- Animated particle background -->
+<canvas id="particle-canvas"></canvas>
+
+<!-- ===========================
+     1. HERO SECTION
+     =========================== -->
+<section class="landing-hero">
+  <!-- Background grid -->
+  <div class="hero-grid"></div>
+
+  <!-- Ambient orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Content -->
+  <div style="position: relative; z-index: 2; max-width: 1100px; margin: 0 auto;">
+
+    <!-- Top badge row -->
+    <div style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2rem;">
+      <span class="badge badge-amber" style="font-size: 0.75rem; display: inline-flex; gap: 0.4rem; align-items: center;">
+        🏆 &nbsp; CASPER NETWORK HACKATHON 2026
+      </span>
+      <span class="badge badge-violet" style="font-size: 0.75rem; display: inline-flex; gap: 0.4rem; align-items: center;">
+        ⛓️ ODRA FRAMEWORK
+      </span>
+      <span class="network-badge">
+        <span class="status-dot" style="width: 7px; height: 7px;"></span> Testnet #44 Online
+      </span>
+    </div>
+
+    <!-- Main headline with typing effect -->
+    <h1 class="glow-heading" style="font-size: clamp(2.8rem, 6vw, 5.5rem); line-height: 1.05; max-width: 1000px; margin: 0 auto 1.5rem auto; font-weight: 900; letter-spacing: -0.02em;">
+      <span style="background: linear-gradient(135deg, #fff 0%, #c4b5fd 40%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block;">The Autonomous</span>
+      <span style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #f97316 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block;">Governance & Security</span>
+      <span style="background: linear-gradient(135deg, #fff 40%, #7dd3fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block;">Copilot</span>
+    </h1>
+
+    <!-- Dynamic subtitle -->
+    <p style="font-size: clamp(1rem, 2vw, 1.3rem); max-width: 720px; margin: 0 auto 1.25rem auto; color: #94a3b8; line-height: 1.75;">
+      Before any DeFi agent signs a transaction on Casper, Fortis AI intercepts the payload, issues an
+      <strong style="color: #a78bfa;">HTTP 402 machine-payable invoice</strong>, runs a
+      <strong style="color: #f59e0b;">dual-threat quantitative + infrastructure scan</strong>, and returns a
+      <strong style="color: #10b981;">cryptographic Go/No-Go compliance token</strong>.
+    </p>
+
+    <!-- Typing description -->
+    <div style="font-family: 'JetBrains Mono', 'Courier New', monospace; color: #64748b; font-size: 0.9rem; margin-bottom: 2.5rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem;">
+      <span style="color: var(--accent-emerald);">▶</span>
+      <span class="typing-container">
+        <span id="hero-typewriter">x402 Protocol · Odra Framework · Casper Testnet</span>
+        <span class="typed-cursor"></span>
+      </span>
+    </div>
+
+    <!-- CTA Buttons -->
+    <div style="display: flex; gap: 1.25rem; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 3rem;">
+      <a href="{% url 'login' %}" class="btn-amber" id="cta-primary"
+        style="font-size: 1.1rem; padding: 1.1rem 2.6rem; border-radius: 50px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.65rem; box-shadow: 0 8px 30px rgba(245,158,11,0.35); transition: all 0.3s;" onmouseover="this.style.transform='translateY(-3px) scale(1.03)'; this.style.boxShadow='0 16px 40px rgba(245,158,11,0.5)'" onmouseout="this.style.transform='none'; this.style.boxShadow='0 8px 30px rgba(245,158,11,0.35)'">
+        🚀 &nbsp; LAUNCH AGENT PLAYGROUND
+      </a>
+      <a href="{% url 'login' %}" class="btn-outline"
+        style="font-size: 1rem; padding: 1.1rem 2.4rem; color: #a78bfa; text-decoration: none; border-radius: 50px; display: inline-flex; align-items: center; gap: 0.65rem; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+        🔒 &nbsp; COMMAND DASHBOARD
+      </a>
+    </div>
+
+    <!-- Trust indicators row -->
+    <div style="display: flex; justify-content: center; align-items: center; gap: 2.5rem; flex-wrap: wrap;">
+      <div style="text-align: center;">
+        <div style="font-size: 2rem; font-weight: 900; color: var(--accent-amber); line-height: 1;">
+          <span class="counter-val" data-target="5000" data-suffix="+">5000+</span>
+        </div>
+        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.25rem;">Ticks Analyzed/Scan</div>
+      </div>
+      <div style="width: 1px; height: 36px; background: rgba(255,255,255,0.1);"></div>
+      <div style="text-align: center;">
+        <div style="font-size: 2rem; font-weight: 900; color: var(--accent-emerald); line-height: 1;">12ms</div>
+        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.25rem;">RPC Latency</div>
+      </div>
+      <div style="width: 1px; height: 36px; background: rgba(255,255,255,0.1);"></div>
+      <div style="text-align: center;">
+        <div style="font-size: 2rem; font-weight: 900; color: var(--accent-violet-light); line-height: 1;">100%</div>
+        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.25rem;">Autonomous — Zero Humans</div>
+      </div>
+      <div style="width: 1px; height: 36px; background: rgba(255,255,255,0.1);"></div>
+      <div style="text-align: center;">
+        <div style="font-size: 2rem; font-weight: 900; color: var(--accent-sky); line-height: 1;">SHA-256</div>
+        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.25rem;">On-Chain Audit Proof</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll down indicator -->
+  <div class="scroll-indicator">
+    <span>Scroll to explore</span>
+    <div class="arrow"></div>
+  </div>
+</section>
+
+
+<!-- ===========================
+     2. LIVE TERMINAL DEMO
+     =========================== -->
+<section class="reveal-section" style="max-width: 1120px; margin: 0 auto 6rem auto; padding: 0 1.5rem;">
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <div class="badge badge-violet" style="margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem;">⚡ LIVE INTERCEPTION PROOF</div>
+    <h2 style="font-size: 2.2rem; font-weight: 900; color: #fff; margin: 0;">Watch Fortis AI Block a Flash Crash Attack</h2>
+    <p style="color: var(--text-muted); margin-top: 0.75rem; font-size: 1rem;">Real-time dual-threat audit running on Casper Testnet Validator #44</p>
+  </div>
+
+  <div class="glass-card" style="border: 1px solid rgba(124,58,237,0.3); overflow: hidden; box-shadow: 0 0 60px rgba(124,58,237,0.15);">
+    <!-- Window chrome bar -->
+    <div style="background: rgba(0,0,0,0.5); padding: 0.75rem 1.25rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06);">
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <span style="width:12px;height:12px;border-radius:50%;background:#f43f5e;display:inline-block;"></span>
+        <span style="width:12px;height:12px;border-radius:50%;background:#f59e0b;display:inline-block;"></span>
+        <span style="width:12px;height:12px;border-radius:50%;background:#10b981;display:inline-block;"></span>
+        <span style="font-size:0.72rem;color:var(--text-muted);margin-left:0.75rem;font-family:monospace;">fortis-kernel v2.0 — Casper Odra Sandbox</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span class="badge badge-go" style="font-size: 0.65rem;">🟢 GUARDRAIL ACTIVE</span>
+        <span id="live-demo-timer" style="font-size: 0.7rem; color: var(--text-muted); font-family: monospace;">00:00</span>
+      </div>
+    </div>
+    <!-- Terminal output -->
+    <div id="live-terminal" style="background: rgba(0,0,0,0.6); padding: 1.5rem; font-family: 'JetBrains Mono','Courier New',monospace; font-size: 0.82rem; line-height: 1.8; min-height: 280px; color: #c9d1d9; overflow-y: auto; max-height: 320px;">
+      <div class="terminal-line" style="animation-delay: 0.2s; color: var(--accent-violet-light);">▶ Fortis AI Kernel v2.0 initializing on Casper Odra Bridge...</div>
+      <div class="terminal-line" style="animation-delay: 0.6s; color: var(--text-muted);">  Loading guardrail policies &nbsp;· &nbsp;PII detection &nbsp;· &nbsp;Audit stream...</div>
+      <div class="terminal-line" style="animation-delay: 1.0s; color: var(--accent-emerald);">✓ x402 Payment Interceptor armed &nbsp;· &nbsp;Treasury wallet: 0x01a2b3c4...fortis</div>
+      <div class="terminal-line" style="animation-delay: 1.5s; color: var(--accent-sky);">→ Incoming payload: ArbitrageFlashSniper [CSPR-CRASH/USD] &nbsp;|&nbsp; Agent_0x71C</div>
+      <div class="terminal-line" style="animation-delay: 2.0s; color: var(--accent-amber);">⚠ [x402 PROTOCOL] No X-Casper-402-Proof header! HTTP 402 — Invoice inv_deadbeef issued.</div>
+      <div class="terminal-line" style="animation-delay: 2.6s; color: var(--accent-emerald);">💸 [PAYMENT] 2.50 CSPR received from agent · tx: 0xcspr_pay_9f3c7a...</div>
+      <div class="terminal-line" style="animation-delay: 3.2s; color: var(--accent-sky);">⚙ [QUANT ENGINE] Bollinger Bands ±2σ computed · 5,012 tick rows ingested</div>
+      <div class="terminal-line" style="animation-delay: 3.8s; color: var(--accent-rose);">🚨 [ALERT] Z-Score: -3.85σ · 30-Tick Drawdown: -18.4% · FLASH CRASH PATTERN!</div>
+      <div class="terminal-line" style="animation-delay: 4.4s; color: var(--accent-rose);">🛡 [INFRA SCAN] Honeypot bytecode detected at destination contract hash-deadbeef...</div>
+      <div class="terminal-line" style="animation-delay: 5.0s; color: var(--accent-rose); font-weight: 800;">🛑 [ODRA GOVERNANCE] NO-GO LOGGED → Hash: sha256_998877665544... → Casper Block #892104</div>
+      <div class="terminal-line" style="animation-delay: 5.6s; color: var(--accent-rose); font-weight: 900; font-size: 0.9rem;">▶ [FINAL VERDICT] TRANSACTION ABORTED · Agent capital PROTECTED · 0 CSPR lost!</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===========================
+     3. HOW IT WORKS — FLOW
+     =========================== -->
+<section class="reveal-section" style="max-width: 1120px; margin: 0 auto 6rem auto; padding: 0 1.5rem;">
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;">
+
+    <!-- Left: Steps -->
+    <div>
+      <div class="badge badge-sky" style="margin-bottom: 1.25rem; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.72rem;">💡 HOW IT WORKS</div>
+      <h2 style="font-size: 2.2rem; font-weight: 900; color: #fff; margin: 0 0 0.75rem 0; line-height: 1.15;">
+        Five Steps. Zero<br>Human Oversight.
+      </h2>
+      <p style="color: var(--text-muted); line-height: 1.7; margin-bottom: 2rem; font-size: 0.95rem;">
+        Every DeFi agent transaction is intercepted, verified, dual-threat scanned, and cryptographically logged — all in under 200ms.
+      </p>
+
+      <div id="flow-steps" style="position: relative;">
+        <div class="flow-step" style="transition-delay: 0.1s;">
+          <div class="step-num">1</div>
+          <div>
+            <div style="font-weight: 700; color: #fff; margin-bottom: 0.35rem;">Agent Sends Payload</div>
+            <div style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">DeFi trading agent fires a transaction signing request to Fortis AI's machine-payable API endpoint.</div>
+          </div>
+        </div>
+        <div class="flow-step" style="transition-delay: 0.2s;">
+          <div class="step-num" style="background: linear-gradient(135deg, #f59e0b, #f97316);">2</div>
+          <div>
+            <div style="font-weight: 700; color: #fff; margin-bottom: 0.35rem;">HTTP 402 — Auto Invoice</div>
+            <div style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">Fortis intercepts the request and issues a machine-readable 2.50 CSPR invoice via the x402 protocol.</div>
+          </div>
+        </div>
+        <div class="flow-step" style="transition-delay: 0.3s;">
+          <div class="step-num" style="background: linear-gradient(135deg, #0ea5e9, #06b6d4);">3</div>
+          <div>
+            <div style="font-weight: 700; color: #fff; margin-bottom: 0.35rem;">Agent Pays Autonomously</div>
+            <div style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">The agent auto-pays the invoice from its own Casper wallet with zero human interaction required.</div>
+          </div>
+        </div>
+        <div class="flow-step" style="transition-delay: 0.4s;">
+          <div class="step-num" style="background: linear-gradient(135deg, #10b981, #059669);">4</div>
+          <div>
+            <div style="font-weight: 700; color: #fff; margin-bottom: 0.35rem;">Dual-Threat AI Analysis</div>
+            <div style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">Quant engine computes Bollinger bands + Z-score. Cybersecurity scanner audits ports and contract bytecode simultaneously.</div>
+          </div>
+        </div>
+        <div class="flow-step" style="transition-delay: 0.5s; border-bottom: none;">
+          <div class="step-num" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">5</div>
+          <div>
+            <div style="font-weight: 700; color: #fff; margin-bottom: 0.35rem;">Cryptographic Go/No-Go Token</div>
+            <div style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">Verdict is hashed via Odra Framework onto Casper Testnet. Compliance token or rejection proof is returned.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Verdict visual -->
+    <div style="position: relative;">
+      <div style="background: rgba(7,8,15,0.8); border: 1px solid rgba(124,58,237,0.3); border-radius: 1.25rem; padding: 2rem; text-align: center; backdrop-filter: blur(20px); box-shadow: 0 0 60px rgba(124,58,237,0.12);">
+        <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1.25rem; font-weight: 700;">Compliance Verdict Engine</div>
+
+        <!-- Animated risk meter -->
+        <div style="margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+            <span>SAFE</span><span>Risk Score</span><span>CRITICAL</span>
+          </div>
+          <div style="background: rgba(255,255,255,0.07); border-radius: 50px; height: 10px; overflow: hidden;">
+            <div id="risk-bar" style="height: 100%; width: 0%; border-radius: 50px; background: linear-gradient(90deg, #10b981, #f59e0b, #f43f5e); transition: width 2s cubic-bezier(0.16,1,0.3,1);"></div>
+          </div>
+          <div id="risk-score-lbl" style="text-align: right; font-size: 0.72rem; margin-top: 0.35rem; color: var(--text-muted);">Initializing...</div>
+        </div>
+
+        <!-- Token output display -->
+        <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+          <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: 0.75rem; padding: 1.15rem;">
+            <div class="token-badge token-go" style="margin-bottom: 0.75rem;">✅ GO — COMPLIANCE TOKEN</div>
+            <div style="font-family: monospace; font-size: 0.72rem; color: var(--text-muted); word-break: break-all; text-align: left;">tok_id: <span style="color: var(--accent-emerald);">cspr_gov_8f3a2c9d...</span><br>agent: <span style="color: #fff;">CasperYieldBot-01</span><br>block: <span style="color: var(--accent-sky);">#892104</span> · valid: 120s</div>
+          </div>
+          <div style="position: relative; text-align: center; color: var(--text-muted); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;">— OR —</div>
+          <div style="background: rgba(244,63,94,0.08); border: 1px solid rgba(244,63,94,0.25); border-radius: 0.75rem; padding: 1.15rem;">
+            <div class="token-badge token-nogo" style="margin-bottom: 0.75rem;">🛑 NO-GO — REJECTION PROOF</div>
+            <div style="font-family: monospace; font-size: 0.72rem; color: var(--text-muted); word-break: break-all; text-align: left;">hash: <span style="color: var(--accent-rose);">sha256_998877665544...</span><br>reason: <span style="color: #fff;">FLASH_CRASH + HONEYPOT</span><br>block: <span style="color: var(--accent-sky);">#892105</span> · immutable</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.72rem; color: var(--text-muted);">
+          ⛓️ Every verdict logged permanently on <strong style="color: #fff;">Casper Testnet</strong> via <strong style="color: var(--accent-violet-light);">Odra Framework</strong>
+        </div>
+      </div>
+
+      <!-- Decorative glow -->
+      <div style="position: absolute; bottom: -40px; right: -40px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(124,58,237,0.25), transparent); pointer-events: none; border-radius: 50%;"></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===========================
+     4. FEATURE BENTO GRID
+     =========================== -->
+<section class="reveal-section" style="max-width: 1120px; margin: 0 auto 6rem auto; padding: 0 1.5rem;">
+  <div style="text-align: center; margin-bottom: 3rem;">
+    <div class="badge badge-amber" style="margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.72rem;">🔧 CORE CAPABILITIES</div>
+    <h2 style="font-size: 2.2rem; font-weight: 900; color: #fff; margin: 0;">Enterprise-Grade Security.<br>Machine-Native Payments.</h2>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+
+    <!-- Feature 1 -->
+    <div class="feature-card" id="fc1">
+      <span class="card-icon">💳</span>
+      <h3 style="font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 0.65rem;">x402 Machine Storefront</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 1.25rem;">
+        Implements Casper's native HTTP 402 machine payment protocol. Agents autonomously clear 2.50 CSPR micro-invoices before invoking any analysis API — zero human interaction required.
+      </p>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+        <span class="minimal-tag" style="font-size: 0.65rem;">MACHINE-TO-MACHINE</span>
+        <span class="minimal-tag" style="font-size: 0.65rem; border-color: rgba(245,158,11,0.3); color: var(--accent-amber);">2.50 CSPR / SCAN</span>
+      </div>
+    </div>
+
+    <!-- Feature 2 -->
+    <div class="feature-card" id="fc2" style="border-color: rgba(14,165,233,0.2);">
+      <span class="card-icon" style="filter: drop-shadow(0 0 12px rgba(14,165,233,0.5));">📊</span>
+      <h3 style="font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 0.65rem;">Quantitative Risk Engine</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 1.25rem;">
+        Vectorized NumPy analysis evaluates 5,000+ tick Bollinger Band regimes, rolling Z-score velocity, and 30-tick drawdown — detecting flash crashes and synthetic manipulation in real-time.
+      </p>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+        <span class="minimal-tag" style="font-size: 0.65rem; border-color: rgba(56,189,248,0.3); color: var(--accent-sky);">BOLLINGER ±2σ</span>
+        <span class="minimal-tag" style="font-size: 0.65rem; border-color: rgba(56,189,248,0.3); color: var(--accent-sky);">Z-SCORE VELOCITY</span>
+      </div>
+    </div>
+
+    <!-- Feature 3 -->
+    <div class="feature-card" id="fc3" style="border-color: rgba(244,63,94,0.2);">
+      <span class="card-icon" style="filter: drop-shadow(0 0 12px rgba(244,63,94,0.5));">🛡️</span>
+      <h3 style="font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 0.65rem;">Infrastructure Cybersecurity</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 1.25rem;">
+        Probes 8+ network ports for live service exposure, audits destination contract bytecode against honeypot heuristics, and detects hijacked RPC node endpoints before any agent transaction fires.
+      </p>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+        <span class="minimal-tag" style="font-size: 0.65rem; border-color: rgba(244,63,94,0.3); color: var(--accent-rose);">PORT SCANNER</span>
+        <span class="minimal-tag" style="font-size: 0.65rem; border-color: rgba(244,63,94,0.3); color: var(--accent-rose);">BYTECODE AUDIT</span>
+      </div>
+    </div>
+
+    <!-- Feature 4 — Wide -->
+    <div class="feature-card" id="fc4" style="grid-column: span 2; border-color: rgba(245,158,11,0.2); display: flex; align-items: flex-start; gap: 2rem;">
+      <span class="card-icon" style="font-size: 3.5rem; flex-shrink: 0; filter: drop-shadow(0 0 16px rgba(245,158,11,0.5));">⛓️</span>
+      <div>
+        <h3 style="font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 0.65rem;">Odra On-Chain Governance Ledger</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 1.25rem;">
+          Every compliance decision — whether a GO or a NO-GO — is cryptographically hashed via SHA-256 and recorded as an immutable audit entry on the Casper Testnet via the high-performance Odra smart contract framework. Your agents can prove compliance to regulators, DAOs, or partner protocols at any time.
+        </p>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+          <span class="minimal-tag" style="font-size: 0.65rem; border-color: rgba(245,158,11,0.3); color: var(--accent-amber);">IMMUTABLE SHA-256</span>
+          <span class="minimal-tag" style="font-size: 0.65rem; border-color: rgba(245,158,11,0.3); color: var(--accent-amber);">CASPER TESTNET</span>
+          <span class="minimal-tag" style="font-size: 0.65rem; border-color: rgba(245,158,11,0.3); color: var(--accent-amber);">ODRA FRAMEWORK</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 5 -->
+    <div class="feature-card" id="fc5" style="border-color: rgba(16,185,129,0.2);">
+      <span class="card-icon" style="filter: drop-shadow(0 0 12px rgba(16,185,129,0.5));">🔑</span>
+      <h3 style="font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 0.65rem;">JWT Compliance Tokens</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 1.25rem;">
+        Approved agents receive a time-limited cryptographic compliance token (120s TTL), machine-verifiable by any downstream smart contract or DeFi protocol on Casper.
+      </p>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+        <span class="minimal-tag" style="font-size: 0.65rem; border-color: rgba(16,185,129,0.3); color: var(--accent-emerald);">120s TTL</span>
+        <span class="minimal-tag" style="font-size: 0.65rem; border-color: rgba(16,185,129,0.3); color: var(--accent-emerald);">VERIFIABLE</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===========================
+     5. USE CASES GRID
+     =========================== -->
+<section class="reveal-section" style="max-width: 1120px; margin: 0 auto 6rem auto; padding: 0 1.5rem;">
+  <div style="text-align: center; margin-bottom: 3rem;">
+    <div class="badge badge-violet" style="margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.72rem;">🤖 WHO USES FORTIS AI</div>
+    <h2 style="font-size: 2.2rem; font-weight: 900; color: #fff; margin: 0;">Built for Every Agent in<br>the DeFi Ecosystem</h2>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;">
+    <div class="usecase-card">
+      <div style="font-size: 2rem; margin-bottom: 0.85rem;">⚡</div>
+      <div style="font-weight: 800; color: #fff; margin-bottom: 0.5rem; font-size: 1rem;">Arbitrage Flash Bots</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">High-frequency agents executing cross-exchange arbitrage need real-time flash crash detection before every trade fires.</div>
+    </div>
+    <div class="usecase-card">
+      <div style="font-size: 2rem; margin-bottom: 0.85rem;">🌊</div>
+      <div style="font-weight: 800; color: #fff; margin-bottom: 0.5rem; font-size: 1rem;">Yield Routing Agents</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">DeFi liquidity optimizers routing funds across protocols need contract audits to avoid honeypot drains.</div>
+    </div>
+    <div class="usecase-card">
+      <div style="font-size: 2rem; margin-bottom: 0.85rem;">🏛️</div>
+      <div style="font-weight: 800; color: #fff; margin-bottom: 0.5rem; font-size: 1rem;">DAO Treasury Managers</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">Autonomous treasury bots can prove every decision was cryptographically audited before any CSPR was deployed.</div>
+    </div>
+    <div class="usecase-card">
+      <div style="font-size: 2rem; margin-bottom: 0.85rem;">🔗</div>
+      <div style="font-weight: 800; color: #fff; margin-bottom: 0.5rem; font-size: 1rem;">Cross-Chain Routers</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">Bridge agents need RPC node integrity verification to ensure destination infrastructure isn't hijacked.</div>
+    </div>
+    <div class="usecase-card">
+      <div style="font-size: 2rem; margin-bottom: 0.85rem;">📉</div>
+      <div style="font-weight: 800; color: #fff; margin-bottom: 0.5rem; font-size: 1rem;">Liquidation Bots</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">Liquidation agents operating in volatile conditions get instant Z-score analysis to avoid synthetic market traps.</div>
+    </div>
+    <div class="usecase-card">
+      <div style="font-size: 2rem; margin-bottom: 0.85rem;">🛡️</div>
+      <div style="font-weight: 800; color: #fff; margin-bottom: 0.5rem; font-size: 1rem;">Protocol Governance</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">On-chain governance contracts can require a valid Fortis compliance token before executing critical parameter changes.</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===========================
+     6. LIVE STATS BAR
+     =========================== -->
+<section class="reveal-section" style="max-width: 1120px; margin: 0 auto 6rem auto; padding: 0 1.5rem;">
+  <div style="background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(14,165,233,0.08), rgba(245,158,11,0.08)); border: 1px solid rgba(124,58,237,0.25); border-radius: 1.25rem; padding: 2.5rem; display: grid; grid-template-columns: repeat(4,1fr); gap: 2rem; text-align: center; backdrop-filter: blur(20px);">
+    <div>
+      <div style="font-size: 3rem; font-weight: 900; color: var(--accent-amber); line-height: 1; margin-bottom: 0.5rem;">2.50</div>
+      <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">CSPR per Scan</div>
+      <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.35rem; opacity: 0.7;">Auto-collected via x402</div>
+    </div>
+    <div>
+      <div style="font-size: 3rem; font-weight: 900; color: var(--accent-violet-light); line-height: 1; margin-bottom: 0.5rem;">5,000+</div>
+      <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">Tick Rows / Scan</div>
+      <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.35rem; opacity: 0.7;">Vectorized NumPy engine</div>
+    </div>
+    <div>
+      <div style="font-size: 3rem; font-weight: 900; color: var(--accent-emerald); line-height: 1; margin-bottom: 0.5rem;">12ms</div>
+      <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">RPC Latency</div>
+      <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.35rem; opacity: 0.7;">Casper Testnet Validator #44</div>
+    </div>
+    <div>
+      <div style="font-size: 3rem; font-weight: 900; color: var(--accent-sky); line-height: 1; margin-bottom: 0.5rem;">8+</div>
+      <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">Ports Scanned</div>
+      <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.35rem; opacity: 0.7;">80 · 443 · 7777 · 8545 · more</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===========================
+     7. NETWORK / TECH STACK
+     =========================== -->
+<section class="reveal-section" style="max-width: 1120px; margin: 0 auto 6rem auto; padding: 0 1.5rem;">
+  <div style="text-align: center; margin-bottom: 2.5rem;">
+    <div class="badge badge-emerald" style="margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.72rem;">🔬 TECH STACK</div>
+    <h2 style="font-size: 2rem; font-weight: 900; color: #fff; margin: 0;">Powered by Best-in-Class Infrastructure</h2>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.85rem;">
+    <span class="network-badge" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">⛓️ Casper Network</span>
+    <span class="network-badge" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">🦀 Odra Framework</span>
+    <span class="network-badge" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">💳 HTTP x402 Protocol</span>
+    <span class="network-badge" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">🐍 Django REST API</span>
+    <span class="network-badge" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">📐 NumPy Vectorized</span>
+    <span class="network-badge" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">🔐 SHA-256 Hashing</span>
+    <span class="network-badge" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">🔑 JWT Compliance Tokens</span>
+    <span class="network-badge" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">🌐 Testnet RPC Bridge</span>
+    <span class="network-badge" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">📡 WebSocket Live Feed</span>
+    <span class="network-badge" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">🔍 Port Vulnerability Scanner</span>
+  </div>
+</section>
+
+
+<!-- ===========================
+     8. FINAL CTA
+     =========================== -->
+<section class="reveal-section cta-section" style="max-width: 1120px; margin: 0 auto 4rem auto; padding: 0 1.5rem;">
+  <div style="background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(7,8,15,0.95), rgba(245,158,11,0.15)); border: 1px solid rgba(124,58,237,0.3); border-radius: 2rem; padding: 5rem 3rem; text-align: center; position: relative; overflow: hidden; backdrop-filter: blur(20px);">
+
+    <!-- Decorative glows -->
+    <div style="position: absolute; top: -60px; left: -60px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(124,58,237,0.2), transparent); border-radius: 50%; pointer-events: none;"></div>
+    <div style="position: absolute; bottom: -60px; right: -60px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(245,158,11,0.15), transparent); border-radius: 50%; pointer-events: none;"></div>
+
+    <div style="position: relative; z-index: 2;">
+      <div class="badge badge-amber" style="margin-bottom: 1.5rem; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; padding: 0.45rem 1.2rem;">
+        🏆 &nbsp; HACKATHON SUBMISSION — CASPER NETWORK 2026
+      </div>
+      <h2 style="font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 900; color: #fff; margin: 0 0 1.25rem 0; line-height: 1.1;">
+        Your Agents Are Flying Blind.<br>
+        <span style="background: linear-gradient(135deg, #a78bfa, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Fortis AI Sees Everything.</span>
+      </h2>
+      <p style="font-size: 1.1rem; color: #94a3b8; max-width: 580px; margin: 0 auto 2.5rem auto; line-height: 1.7;">
+        Join the machine-payable governance layer that every Casper DeFi agent must authenticate with before signing a transaction.
+      </p>
+      <div style="display: flex; gap: 1.25rem; justify-content: center; flex-wrap: wrap;">
+        <a href="{% url 'login' %}" class="btn-amber"
+          style="font-size: 1.15rem; padding: 1.25rem 3rem; border-radius: 50px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.65rem; box-shadow: 0 10px 40px rgba(245,158,11,0.4);"
+          onmouseover="this.style.transform='translateY(-4px) scale(1.04)'; this.style.boxShadow='0 20px 50px rgba(245,158,11,0.55)'"
+          onmouseout="this.style.transform='none'; this.style.boxShadow='0 10px 40px rgba(245,158,11,0.4)'">
+          🚀 &nbsp; ENTER FORTIS AI CONSOLE
+        </a>
+        <a href="{% url 'login' %}" class="btn-outline"
+          style="font-size: 1rem; padding: 1.25rem 2.5rem; color: #a78bfa; text-decoration: none; border-radius: 50px; display: inline-flex; align-items: center; gap: 0.65rem;"
+          onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='none'">
+          📖 &nbsp; VIEW LIVE AUDIT LOGS
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+// =============================================
+// 1. Particle Canvas Background
+// =============================================
+(function() {
+  var canvas = document.getElementById('particle-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W, H, particles = [];
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (var i = 0; i < 80; i++) {
+    particles.push({
+      x: Math.random() * 1920, y: Math.random() * 1080,
+      vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.5 + 0.5,
+      c: ['rgba(167,139,250,', 'rgba(245,158,11,', 'rgba(14,165,233,'][Math.floor(Math.random() * 3)],
+      a: Math.random() * 0.5 + 0.2
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(function(p) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.c + p.a + ')';
+      ctx.fill();
+    });
+    // Draw connecting lines
+    for (var i = 0; i < particles.length; i++) {
+      for (var j = i + 1; j < particles.length; j++) {
+        var dx = particles[i].x - particles[j].x;
+        var dy = particles[i].y - particles[j].y;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(167,139,250,' + (0.08 * (1 - dist / 120)) + ')';
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// =============================================
+// 2. Typewriter Rotator
+// =============================================
+(function() {
+  var phrases = [
+    'x402 Protocol · Odra Framework · Casper Testnet',
+    'Dual-Threat AI — Quantitative + Cybersecurity',
+    'Machine-Payable · Cryptographically Verified',
+    'Blockchain Governance · Immutable Audit Trail',
+    'Zero Human Oversight · 12ms RPC Latency'
+  ];
+  var el = document.getElementById('hero-typewriter');
+  if (!el) return;
+  var idx = 0;
+  setInterval(function() {
+    el.style.opacity = '0';
+    setTimeout(function() {
+      idx = (idx + 1) % phrases.length;
+      el.textContent = phrases[idx];
+      el.style.opacity = '1';
+    }, 300);
+  }, 4000);
+})();
+
+// =============================================
+// 3. Scroll Reveal Animations
+// =============================================
+(function() {
+  var sections = document.querySelectorAll('.reveal-section');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+  sections.forEach(function(s) { observer.observe(s); });
+
+  // Flow steps observer
+  var steps = document.querySelectorAll('.flow-step');
+  var stepObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) { entry.target.classList.add('visible'); }
+    });
+  }, { threshold: 0.2 });
+  steps.forEach(function(s) { stepObs.observe(s); });
+})();
+
+// =============================================
+// 4. Risk Bar Animation (on scroll into view)
+// =============================================
+(function() {
+  var bar = document.getElementById('risk-bar');
+  var lbl = document.getElementById('risk-score-lbl');
+  if (!bar) return;
+  var animated = false;
+
+  var obs = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting && !animated) {
+      animated = true;
+      var score = 72;
+      bar.style.width = score + '%';
+      lbl.textContent = 'Risk Score: ' + score + '/100 — HIGH RISK';
+      lbl.style.color = '#f59e0b';
+    }
+  }, { threshold: 0.5 });
+  obs.observe(bar.parentElement);
+})();
+
+// =============================================
+// 5. Live Demo Terminal Timer
+// =============================================
+(function() {
+  var timer = document.getElementById('live-demo-timer');
+  if (!timer) return;
+  var start = Date.now();
+  setInterval(function() {
+    var elapsed = Math.floor((Date.now() - start) / 1000);
+    var m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+    var s = String(elapsed % 60).padStart(2, '0');
+    timer.textContent = m + ':' + s;
+  }, 1000);
+})();
+
+// =============================================
+// 6. Feature Card Mouse-Glow Effect
+// =============================================
+document.querySelectorAll('.feature-card').forEach(function(card) {
+  card.addEventListener('mousemove', function(e) {
+    var rect = card.getBoundingClientRect();
+    var x = ((e.clientX - rect.left) / rect.width) * 100;
+    var y = ((e.clientY - rect.top) / rect.height) * 100;
+    card.style.setProperty('--mouse-x', x + '%');
+    card.style.setProperty('--mouse-y', y + '%');
+  });
+});
+</script>
+{% endblock %}

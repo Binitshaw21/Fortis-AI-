@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Fortis AI | x402 Live Payment & Governance Feed{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom: 2rem;">
+  <h1 class="page-title" style="font-size: 2rem; background: linear-gradient(135deg, var(--accent-violet), var(--accent-amber)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+    📡 Live Activity Feed
+  </h1>
+  <p class="page-subtitle" style="color: var(--text-muted); margin-top: 0.4rem;">
+    Real-time invoice events and AI governance signals from your deployment.
+  </p>
+</div>
+
+<!-- Metric Cards Row -->
+<div class="bento-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 2rem;">
+
+  <div class="glass-card glow-violet bento-card-content" style="padding: 1.3rem;">
+    <div style="font-size: 0.7rem; color: var(--accent-violet-light); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 0.5rem;">Total CSPR Invoiced</div>
+    <div id="feed-total-cspr" style="font-size: 2rem; font-weight: 800; color: var(--text-primary); line-height: 1;">0.00</div>
+    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem;">CSPR · Live</div>
+    <div style="width: 2.5rem; height: 3px; background: linear-gradient(90deg, var(--accent-violet), var(--accent-violet-light)); border-radius: 9999px; margin-top: 0.8rem;"></div>
+  </div>
+
+  <div class="glass-card glow-amber bento-card-content" style="padding: 1.3rem;">
+    <div style="font-size: 0.7rem; color: var(--accent-amber); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 0.5rem;">Total AI Scans</div>
+    <div id="feed-total-scans" style="font-size: 2rem; font-weight: 800; color: var(--text-primary); line-height: 1;">0</div>
+    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem;">Governance checks · Session</div>
+    <div style="width: 2.5rem; height: 3px; background: linear-gradient(90deg, var(--accent-amber), #fde68a); border-radius: 9999px; margin-top: 0.8rem;"></div>
+  </div>
+
+  <div class="glass-card liquid-glass bento-card-content" style="padding: 1.3rem;">
+    <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 0.5rem;">Feed Status</div>
+    <div style="font-size: 1.6rem; font-weight: 800; color: var(--accent-emerald); line-height: 1; display: flex; align-items: center; gap: 0.4rem;">
+      <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent-emerald); display: inline-block; animation: pulse 2s infinite;"></span>
+      LIVE
+    </div>
+    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem;">WebSocket connected</div>
+    <div style="width: 2.5rem; height: 3px; background: linear-gradient(90deg, var(--accent-emerald), #6ee7b7); border-radius: 9999px; margin-top: 0.8rem;"></div>
+  </div>
+
+</div>
+
+<!-- Main Two-Panel Layout -->
+<div class="bento-grid" style="grid-template-columns: repeat(2, 1fr); gap: 1.8rem;">
+
+  <!-- Left Panel: Invoice Stream -->
+  <div class="glass-card glow-amber bento-card-content" style="padding: 1.6rem; display: flex; flex-direction: column;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem;">
+      <h2 style="font-size: 1rem; font-weight: 700; color: var(--accent-amber); display: flex; align-items: center; gap: 0.5rem;">
+        <span>🧾</span> Invoice Stream
+      </h2>
+      <span style="padding: 0.2rem 0.7rem; background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); border-radius: 9999px; font-size: 0.68rem; color: var(--accent-amber); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;">
+        ● Live
+      </span>
+    </div>
+
+    <div id="invoice-stream" style="flex: 1; min-height: 360px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.6rem;">
+
+      <!-- Fallback static items -->
+      <div style="padding: 0.8rem 1rem; background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.2); border-radius: 0.6rem; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">INV-2024-001</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);">GPT-4o · 1 200 tokens</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--accent-amber);">12.50 CSPR</div>
+          <div style="font-size: 0.65rem; color: var(--accent-emerald);">✓ Settled</div>
+        </div>
+      </div>
+
+      <div style="padding: 0.8rem 1rem; background: rgba(124,58,237,0.07); border: 1px solid rgba(124,58,237,0.2); border-radius: 0.6rem; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">INV-2024-002</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);">Claude-3 · 800 tokens</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--accent-violet-light);">8.00 CSPR</div>
+          <div style="font-size: 0.65rem; color: var(--accent-emerald);">✓ Settled</div>
+        </div>
+      </div>
+
+      <div style="padding: 0.8rem 1rem; background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.2); border-radius: 0.6rem; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">INV-2024-003</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);">GPT-4o · 3 400 tokens</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--accent-amber);">34.00 CSPR</div>
+          <div style="font-size: 0.65rem; color: var(--accent-sky);">⏳ Pending</div>
+        </div>
+      </div>
+
+      <div style="padding: 0.8rem 1rem; background: rgba(124,58,237,0.07); border: 1px solid rgba(124,58,237,0.2); border-radius: 0.6rem; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">INV-2024-004</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);">Gemini-Pro · 2 100 tokens</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--accent-violet-light);">21.00 CSPR</div>
+          <div style="font-size: 0.65rem; color: var(--accent-rose);">✕ Failed</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Right Panel: Governance Stream -->
+  <div class="glass-card glow-violet bento-card-content" style="padding: 1.6rem; display: flex; flex-direction: column;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem;">
+      <h2 style="font-size: 1rem; font-weight: 700; color: var(--accent-violet-light); display: flex; align-items: center; gap: 0.5rem;">
+        <span>🛡️</span> Governance Stream
+      </h2>
+      <span style="padding: 0.2rem 0.7rem; background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.3); border-radius: 9999px; font-size: 0.68rem; color: var(--accent-violet-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;">
+        ● Monitoring
+      </span>
+    </div>
+
+    <div id="governance-stream" style="flex: 1; min-height: 360px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.6rem;">
+
+      <!-- Fallback static items -->
+      <div style="padding: 0.8rem 1rem; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: 0.6rem; display: flex; align-items: center; gap: 0.8rem;">
+        <span style="font-size: 1.1rem;">✅</span>
+        <div style="flex: 1;">
+          <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">Content Policy — GO</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);">Response within safe parameters</div>
+        </div>
+        <span style="font-size: 0.7rem; color: var(--accent-emerald); font-weight: 600;">GO</span>
+      </div>
+
+      <div style="padding: 0.8rem 1rem; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); border-radius: 0.6rem; display: flex; align-items: center; gap: 0.8rem;">
+        <span style="font-size: 1.1rem;">🚨</span>
+        <div style="flex: 1;">
+          <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">PII Detected — NO-GO</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);">Email address in output · Blocked</div>
+        </div>
+        <span style="font-size: 0.7rem; color: var(--accent-rose); font-weight: 600;">NO-GO</span>
+      </div>
+
+      <div style="padding: 0.8rem 1rem; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: 0.6rem; display: flex; align-items: center; gap: 0.8rem;">
+        <span style="font-size: 1.1rem;">✅</span>
+        <div style="flex: 1;">
+          <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">Hallucination Check — GO</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);">Confidence score 0.94 · Pass</div>
+        </div>
+        <span style="font-size: 0.7rem; color: var(--accent-emerald); font-weight: 600;">GO</span>
+      </div>
+
+      <div style="padding: 0.8rem 1rem; background: rgba(14,165,233,0.08); border: 1px solid rgba(14,165,233,0.25); border-radius: 0.6rem; display: flex; align-items: center; gap: 0.8rem;">
+        <span style="font-size: 1.1rem;">ℹ️</span>
+        <div style="flex: 1;">
+          <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">Bias Audit — INFO</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);">Slight gender skew flagged · Logged</div>
+        </div>
+        <span style="font-size: 0.7rem; color: var(--accent-sky); font-weight: 600;">INFO</span>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}

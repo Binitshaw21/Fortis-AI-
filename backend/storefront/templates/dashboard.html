@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fortis AI | Live Governance & Security Dashboard{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Autonomous Governance & Security Copilot</h1>
+    <p>Every DeFi trading agent on Casper must clear Fortis AI's x402 payment storefront and pass dual-threat quantitative & cybersecurity scans before transaction execution.</p>
+</div>
+
+<!-- BENTO GRID DASHBOARD -->
+<div class="bento-grid">
+    <!-- Card 1: Volatility Chart (Span 2 cols × 2 rows) -->
+    <div class="glass-card glow-violet bento-span-2 bento-row-2 bento-card-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.07);">
+            <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">
+                📉 &nbsp; Quantitative Risk Engine — Bollinger ±2σ
+            </div>
+            <span class="badge badge-go" id="chart-status-badge">REGIME: NORMAL</span>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="volatilityChart"></canvas>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px dashed rgba(255,255,255,0.07);">
+            <div>
+                <span style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 0.3rem;">Z-Score Velocity</span>
+                <strong id="val-zscore" style="font-size: 1.1rem; color: var(--accent-violet-light);">-0.42σ</strong>
+            </div>
+            <div>
+                <span style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 0.3rem;">30-Tick Drawdown</span>
+                <strong id="val-drawdown" style="font-size: 1.1rem; color: var(--accent-emerald);">0.00%</strong>
+            </div>
+            <div>
+                <span style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 0.3rem;">Order Book Depth</span>
+                <strong id="val-liquidity" style="font-size: 1.1rem; color: #fff;">$1,450,200</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: x402 Treasury Revenue -->
+    <div class="glass-card glow-amber minimal-stat bento-span-1">
+        <div class="minimal-label">💰 x402 Treasury Revenue</div>
+        <div class="minimal-value" style="color: var(--accent-amber);">
+            <span id="metric-revenue">355.00</span>
+            <small style="font-size: 1.1rem; color: var(--accent-amber-light);">CSPR</small>
+        </div>
+        <div class="minimal-tag" style="color: var(--accent-amber); border-color: rgba(245,158,11,0.3);">⚡ 2.50 CSPR / SCAN</div>
+    </div>
+
+    <!-- Card 3: AI Agent Scans -->
+    <div class="glass-card glow-violet minimal-stat bento-span-1">
+        <div class="minimal-label">🤖 AI Agent Scans</div>
+        <div class="minimal-value" style="color: var(--accent-violet-light);"><span id="metric-scans">142</span></div>
+        <div class="minimal-tag">📈 5,000+ TICKS / SCAN</div>
+    </div>
+
+    <!-- Card 4: Go-Tokens Issued -->
+    <div class="glass-card glow-emerald minimal-stat bento-span-1">
+        <div class="minimal-label">✅ Go-Tokens Issued</div>
+        <div class="minimal-value" style="color: var(--accent-emerald);"><span id="metric-go">128</span></div>
+        <div class="minimal-tag" style="color: var(--accent-emerald); border-color: rgba(16,185,129,0.3);">🔒 120S JWT TTL</div>
+    </div>
+
+    <!-- Card 5: Threats Blocked -->
+    <div class="glass-card glow-rose minimal-stat bento-span-1">
+        <div class="minimal-label">🛑 Threats Blocked</div>
+        <div class="minimal-value" style="color: var(--accent-rose);"><span id="metric-nogo">14</span></div>
+        <div class="minimal-tag" style="color: var(--accent-rose); border-color: rgba(244,63,94,0.3);">🚨 HONEYPOTS BLOCKED</div>
+    </div>
+
+    <!-- Card 6: Liquid Glass AI Core -->
+    <div class="glass-card liquid-glass bento-span-1 bento-card-content" style="justify-content: flex-start; gap: 0.85rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-violet-light);">🧠 AI Processing Core</span>
+            <span class="status-dot"></span>
+        </div>
+        <div style="font-size: 1.25rem; font-weight: 900; color: #fff; line-height: 1.2;">LIQUID MATRIX ACTIVE</div>
+        <p style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.5; margin: 0;">
+            Real-time dual-threat synthesis auditing smart contract bytecode & calculating vector velocity across Casper Testnet nodes.
+        </p>
+        <div style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.08); font-family: var(--font-code); font-size: 0.72rem; color: var(--accent-emerald);">
+            > RISK LATENCY: 12.4ms<br>
+            > PORTS AUDITED: 8/8 PASSED
+        </div>
+    </div>
+
+    <!-- Card 7: Live AI Agent Scan Stream (Span 3 cols wide) -->
+    <div class="glass-card glow-sky bento-span-3 bento-card-content" style="padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.07);">
+            <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">
+                ⚡ &nbsp; Live AI Agent Scan Feed — Odra On-Chain Log
+            </div>
+            <small style="font-family: var(--font-code); color: var(--accent-amber); background: rgba(245,158,11,0.1); padding: 0.3rem 0.7rem; border-radius: 6px; border: 1px solid rgba(245,158,11,0.25); font-size: 0.72rem;">HTTP 402 PAID ✨</small>
+        </div>
+        <div class="scan-feed" id="scan-stream" style="max-height: 200px;">
+            <div class="scan-item">
+                <div>
+                    <div class="scan-agent"><span>🤖</span> CasperYieldBot-01 [CSPR/USD]</div>
+                    <div class="scan-meta">Contract: hash-8899aabb... | Odra Proof: a1b2c3d4...</div>
+                </div>
+                <span class="badge badge-go">GO</span>
+            </div>
+            <div class="scan-item">
+                <div>
+                    <div class="scan-agent"><span>⚡</span> ArbitrageAgent-X [ETH/USD]</div>
+                    <div class="scan-meta">Contract: hash-11223344... | Odra Proof: f6e5d4c3...</div>
+                </div>
+                <span class="badge badge-go">GO</span>
+            </div>
+            <div class="scan-item" style="border-left-color: rgba(244, 63, 94, 0.5);">
+                <div>
+                    <div class="scan-agent"><span>🚨</span> FlashLoanSniper [CSPR-CRASH/USD]</div>
+                    <div class="scan-meta" style="color: var(--accent-rose);">Reason: CRITICAL FLASH CRASH DETECTED</div>
+                </div>
+                <span class="badge badge-nogo">NO-GO</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}

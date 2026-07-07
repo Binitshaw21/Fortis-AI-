@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Fortis AI | Interactive Agent Playground{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom: 2rem;">
+  <h1 class="page-title" style="font-size: 2rem; background: linear-gradient(135deg, var(--accent-violet), var(--accent-amber)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+    🎮 AI Agent Simulation Playground
+  </h1>
+  <p class="page-subtitle" style="color: var(--text-muted); margin-top: 0.4rem;">
+    Configure and simulate AI agent scenarios in a sandboxed environment.
+  </p>
+</div>
+
+<!-- Spec Cards Row -->
+<div class="bento-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 2rem;">
+
+  <div class="glass-card glow-violet bento-card-content" style="padding: 1.2rem; text-align: center;">
+    <div style="font-size: 1.6rem; margin-bottom: 0.4rem;">🤖</div>
+    <div style="font-size: 0.7rem; color: var(--accent-violet-light); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;">Agent Model</div>
+    <div style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-top: 0.2rem;">GPT-4o</div>
+  </div>
+
+  <div class="glass-card glow-amber bento-card-content" style="padding: 1.2rem; text-align: center;">
+    <div style="font-size: 1.6rem; margin-bottom: 0.4rem;">⚡</div>
+    <div style="font-size: 0.7rem; color: var(--accent-amber); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;">Max Tokens</div>
+    <div style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-top: 0.2rem;">8 192</div>
+  </div>
+
+  <div class="glass-card glow-emerald bento-card-content" style="padding: 1.2rem; text-align: center;">
+    <div style="font-size: 1.6rem; margin-bottom: 0.4rem;">✅</div>
+    <div style="font-size: 0.7rem; color: var(--accent-emerald); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;">Safe Mode</div>
+    <div style="font-size: 1.1rem; font-weight: 700; color: var(--accent-emerald); margin-top: 0.2rem;">Active</div>
+  </div>
+
+  <div class="glass-card liquid-glass bento-card-content" style="padding: 1.2rem; text-align: center;">
+    <div style="font-size: 1.6rem; margin-bottom: 0.4rem;">🔬</div>
+    <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;">Sandbox</div>
+    <div style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-top: 0.2rem;">Isolated</div>
+  </div>
+
+</div>
+
+<!-- Main Two-Panel Layout -->
+<div class="bento-grid" style="grid-template-columns: repeat(2, 1fr); gap: 1.8rem;">
+
+  <!-- Left Panel: Configuration -->
+  <div class="glass-card glow-violet bento-card-content" style="padding: 1.6rem;">
+    <h2 style="font-size: 1rem; font-weight: 700; color: var(--accent-violet-light); margin-bottom: 1.4rem; display: flex; align-items: center; gap: 0.5rem;">
+      <span>⚙️</span> Simulation Configuration
+    </h2>
+
+    <div style="margin-bottom: 1.2rem;">
+      <label for="sim-agent" style="display: block; font-size: 0.78rem; font-weight: 600; color: var(--accent-violet-light); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.06em;">
+        Agent Profile
+      </label>
+      <select id="sim-agent" name="sim_agent" class="form-select"
+        style="width: 100%; padding: 0.65rem 0.9rem; background: #0d0f1e; border: 1px solid rgba(167,139,250,0.4); border-radius: 0.5rem; color: #ffffff; font-size: 0.9rem; outline: none; cursor: pointer;">
+        <option value="general">General Assistant</option>
+        <option value="finance">Finance Analyst</option>
+        <option value="medical">Medical Advisor</option>
+        <option value="legal">Legal Counsel</option>
+        <option value="coding">Code Assistant</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom: 1.2rem;">
+      <label for="sim-scenario" style="display: block; font-size: 0.78rem; font-weight: 600; color: var(--accent-amber); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.06em;">
+        Scenario Template
+      </label>
+      <select id="sim-scenario" name="sim_scenario" class="form-select"
+        style="width: 100%; padding: 0.65rem 0.9rem; background: #0d0f1e; border: 1px solid rgba(245,158,11,0.4); border-radius: 0.5rem; color: #ffffff; font-size: 0.9rem; outline: none; cursor: pointer;">
+        <option value="data_exfil">Data Exfiltration Attempt</option>
+        <option value="prompt_inject">Prompt Injection Attack</option>
+        <option value="hallucination">Hallucination Stress Test</option>
+        <option value="pii_leak">PII Leakage Scenario</option>
+        <option value="jailbreak">Jailbreak Resistance</option>
+        <option value="custom">Custom Prompt</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom: 1.6rem;">
+      <label for="sim-infra" style="display: block; font-size: 0.78rem; font-weight: 600; color: var(--accent-sky); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.06em;">
+        Infrastructure Target
+      </label>
+      <select id="sim-infra" name="sim_infra" class="form-select"
+        style="width: 100%; padding: 0.65rem 0.9rem; background: #0d0f1e; border: 1px solid rgba(56,189,248,0.4); border-radius: 0.5rem; color: #ffffff; font-size: 0.9rem; outline: none; cursor: pointer;">
+        <option value="production">Production Clone</option>
+        <option value="staging">Staging Environment</option>
+        <option value="dev">Development Sandbox</option>
+        <option value="isolated">Fully Isolated VM</option>
+      </select>
+    </div>
+
+    <button id="btn-execute-sim" class="btn-amber"
+      style="width: 100%; padding: 0.8rem; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.04em;">
+      ▶ Execute Simulation
+    </button>
+
+    <!-- Status badges -->
+    <div style="display: flex; gap: 0.6rem; margin-top: 1.2rem; flex-wrap: wrap;">
+      <span style="padding: 0.25rem 0.6rem; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); border-radius: 9999px; font-size: 0.7rem; color: var(--accent-emerald); font-weight: 600;">● Guardrails ON</span>
+      <span style="padding: 0.25rem 0.6rem; background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.3); border-radius: 9999px; font-size: 0.7rem; color: var(--accent-violet-light); font-weight: 600;">● PII Filter ON</span>
+      <span style="padding: 0.25rem 0.6rem; background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); border-radius: 9999px; font-size: 0.7rem; color: var(--accent-amber); font-weight: 600;">● Audit Logging</span>
+    </div>
+  </div>
+
+  <!-- Right Panel: Terminal -->
+  <div class="glass-card glow-sky bento-card-content" style="padding: 1.6rem; display: flex; flex-direction: column;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+      <h2 style="font-size: 1rem; font-weight: 700; color: var(--accent-sky); display: flex; align-items: center; gap: 0.5rem;">
+        <span>🖥️</span> Simulation Terminal
+      </h2>
+      <span id="term-status" style="padding: 0.2rem 0.7rem; background: rgba(14,165,233,0.12); border: 1px solid rgba(14,165,233,0.3); border-radius: 9999px; font-size: 0.7rem; color: var(--accent-sky); font-weight: 600;">
+        READY
+      </span>
+    </div>
+
+    <!-- Terminal Window -->
+    <div style="flex: 1; background: rgba(0,0,0,0.55); border: 1px solid rgba(14,165,233,0.2); border-radius: 0.75rem; padding: 1rem; font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace; overflow-y: auto; min-height: 340px; position: relative;">
+      <!-- Terminal top bar -->
+      <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.8rem; padding-bottom: 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
+        <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent-rose); display: inline-block;"></span>
+        <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent-amber); display: inline-block;"></span>
+        <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent-emerald); display: inline-block;"></span>
+        <span style="font-size: 0.7rem; color: var(--text-muted); margin-left: 0.4rem;">fortis-sim v2.0 — sandboxed</span>
+      </div>
+
+      <div id="terminal-output" style="font-size: 0.8rem; line-height: 1.7; color: #c9d1d9;">
+        <div style="color: var(--accent-sky);">▶ Fortis AI Simulation Engine v2.0</div>
+        <div style="color: var(--text-muted);">Initializing secure sandbox environment...</div>
+        <div style="color: var(--accent-emerald);">✓ Guardrail policies loaded</div>
+        <div style="color: var(--accent-emerald);">✓ PII detection layer active</div>
+        <div style="color: var(--accent-violet-light);">✓ Audit stream connected</div>
+        <div style="color: var(--text-muted); margin-top: 0.8rem;">Select an agent and scenario, then click <span style="color: var(--accent-amber); font-weight: 700;">Execute Simulation</span> to begin.</div>
+        <div style="color: var(--text-muted);">_</div>
+      </div>
+    </div>
+
+    <!-- Terminal footer metrics -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-top: 1rem;">
+      <div style="text-align: center; padding: 0.5rem; background: rgba(14,165,233,0.06); border: 1px solid rgba(14,165,233,0.15); border-radius: 0.5rem;">
+        <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">Latency</div>
+        <div id="sim-latency-val" style="font-size: 0.9rem; font-weight: 700; color: var(--accent-sky); transition: all 0.3s;">—</div>
+      </div>
+      <div style="text-align: center; padding: 0.5rem; background: rgba(124,58,237,0.06); border: 1px solid rgba(124,58,237,0.15); border-radius: 0.5rem;">
+        <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">Flags</div>
+        <div id="sim-flags-val" style="font-size: 0.9rem; font-weight: 700; color: var(--accent-violet-light); transition: all 0.3s;">0</div>
+      </div>
+      <div style="text-align: center; padding: 0.5rem; background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.15); border-radius: 0.5rem;">
+        <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">Result</div>
+        <div id="sim-result-val" style="font-size: 0.9rem; font-weight: 700; color: var(--accent-emerald); transition: all 0.3s;">—</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}

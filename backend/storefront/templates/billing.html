@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fortis AI | x402 Machine Billing & Enterprise Plans{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>💳 x402 Machine-to-Machine Billing</h1>
+    <p>Autonomous AI agents pay per scan in CSPR directly via the HTTP 402 protocol. No human subscriptions, credit cards, or API keys required — pure machine-payable infrastructure.</p>
+</div>
+
+<!-- PLAN CARDS -->
+<div class="bento-grid" style="grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 2rem;">
+
+    <!-- Active Plan -->
+    <div class="glass-card glow-violet" style="padding: 2.25rem; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 1.25rem; right: 1.25rem;">
+            <span class="badge badge-go">ACTIVE 🟢</span>
+        </div>
+        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🏢</div>
+        <h2 style="font-size: 1.5rem; color: #fff; margin-bottom: 0.5rem; font-weight: 900;">Enterprise Node Tier</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem;">
+            Unlimited machine-to-machine HTTP 402 verification requests across 44 Casper Testnet Validator nodes.
+        </p>
+        <div style="font-size: 2.75rem; font-weight: 900; letter-spacing: -0.04em; margin-bottom: 0.5rem;">
+            <span style="color: var(--accent-amber);">2.50</span>
+            <small style="font-size: 1.1rem; font-weight: 600; color: var(--text-muted);">CSPR / scan</small>
+        </div>
+        <div style="font-family: var(--font-code); font-size: 0.78rem; color: var(--accent-emerald); margin-top: 1rem; line-height: 1.8;">
+            > INSTANT ON-CHAIN SETTLEMENT<br>
+            > ZERO GAS SURCHARGE<br>
+            > 44-NODE VALIDATOR CONSENSUS
+        </div>
+    </div>
+
+    <!-- Monthly Treasury Volume -->
+    <div class="glass-card glow-amber" style="padding: 2.25rem; position: relative; overflow: hidden;">
+        <div style="font-size: 2.5rem; margin-bottom: 1rem;">📊</div>
+        <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-amber); margin-bottom: 0.5rem;">Monthly x402 Volume</div>
+        <div style="font-size: 3.2rem; font-weight: 900; letter-spacing: -0.04em; color: var(--accent-amber); line-height: 1; margin-bottom: 0.5rem;">
+            14,250 <small style="font-size: 1.3rem; color: #fff;">CSPR</small>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.25rem;">
+            Total machine micro-fees automatically cleared by autonomous DeFi trading agents this billing cycle.
+        </p>
+        <div class="minimal-tag" style="color: var(--accent-emerald); border-color: rgba(16,185,129,0.35);">📈 +340% vs LAST CYCLE</div>
+    </div>
+
+    <!-- Treasury Wallet -->
+    <div class="glass-card liquid-glass" style="padding: 2.25rem;">
+        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🏦</div>
+        <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-violet-light); margin-bottom: 0.75rem;">Treasury Settlement Wallet</div>
+        <div style="font-family: var(--font-code); font-size: 0.82rem; color: var(--accent-violet-light); background: rgba(0,0,0,0.45); padding: 1rem; border-radius: 10px; margin-bottom: 1.25rem; word-break: break-all; border: 1px solid rgba(124,58,237,0.25); line-height: 1.6;">
+            0x01a2b3c4000000000000000000000000000000000000000000fortis_treasury_cspr
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 1.5rem;">
+            Verified smart contract treasury address receiving real-time micro-payments before Odra audit token issuance.
+        </p>
+        <button class="btn-primary" onclick="navigator.clipboard.writeText('0x01a2b3c4000000000000000000000000000000000000000000fortis_treasury_cspr').then(()=>alert('✅ Address copied!'))">
+            📋 &nbsp; COPY ADDRESS
+        </button>
+    </div>
+
+</div>
+
+<!-- Recent Receipts -->
+<div class="glass-card glow-violet" style="position: relative; overflow: hidden;">
+    <div class="panel-header">
+        <div class="panel-title">
+            <span>⚡</span> Recent x402 Machine Billing Receipts
+        </div>
+        <span class="badge badge-go">REAL-TIME CLEARING 🟢</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; padding: 1.5rem;">
+        {% for inv in "1234"|make_list %}
+        <div style="background: rgba(124,58,237,0.07); border: 1px solid rgba(124,58,237,0.2); padding: 1.25rem; border-radius: 12px; font-family: var(--font-code);">
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Invoice ID</div>
+            <div style="color: var(--accent-violet-light); font-weight: 700; margin-bottom: 0.5rem;">#inv_{{ inv }}8899aabb</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--accent-amber);">2.50 CSPR</div>
+            <div style="font-size: 0.72rem; color: var(--accent-emerald); margin-top: 0.5rem;">✓ PAID & SETTLED</div>
+        </div>
+        {% empty %}
+        <div style="background: rgba(124,58,237,0.07); border: 1px solid rgba(124,58,237,0.2); padding: 1.25rem; border-radius: 12px; font-family: var(--font-code);">
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Invoice ID</div>
+            <div style="color: var(--accent-violet-light); font-weight: 700; margin-bottom: 0.5rem;">#inv_8899aabb</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--accent-amber);">2.50 CSPR</div>
+            <div style="font-size: 0.72rem; color: var(--accent-emerald); margin-top: 0.5rem;">✓ PAID & SETTLED</div>
+        </div>
+        {% endfor %}
+        <!-- Static fallback receipts -->
+        <div style="background: rgba(124,58,237,0.07); border: 1px solid rgba(124,58,237,0.2); padding: 1.25rem; border-radius: 12px; font-family: var(--font-code);">
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Invoice ID</div>
+            <div style="color: var(--accent-violet-light); font-weight: 700; margin-bottom: 0.5rem;">#inv_8899aabb</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--accent-amber);">2.50 CSPR</div>
+            <div style="font-size: 0.72rem; color: var(--accent-emerald); margin-top: 0.5rem;">✓ PAID & SETTLED</div>
+        </div>
+        <div style="background: rgba(124,58,237,0.07); border: 1px solid rgba(124,58,237,0.2); padding: 1.25rem; border-radius: 12px; font-family: var(--font-code);">
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Invoice ID</div>
+            <div style="color: var(--accent-violet-light); font-weight: 700; margin-bottom: 0.5rem;">#inv_11223344</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--accent-amber);">2.50 CSPR</div>
+            <div style="font-size: 0.72rem; color: var(--accent-emerald); margin-top: 0.5rem;">✓ PAID & SETTLED</div>
+        </div>
+        <div style="background: rgba(124,58,237,0.07); border: 1px solid rgba(124,58,237,0.2); padding: 1.25rem; border-radius: 12px; font-family: var(--font-code);">
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Invoice ID</div>
+            <div style="color: var(--accent-violet-light); font-weight: 700; margin-bottom: 0.5rem;">#inv_deadbeef</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--accent-amber);">2.50 CSPR</div>
+            <div style="font-size: 0.72rem; color: var(--accent-emerald); margin-top: 0.5rem;">✓ PAID & SETTLED</div>
+        </div>
+        <div style="background: rgba(124,58,237,0.07); border: 1px solid rgba(124,58,237,0.2); padding: 1.25rem; border-radius: 12px; font-family: var(--font-code);">
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Invoice ID</div>
+            <div style="color: var(--accent-violet-light); font-weight: 700; margin-bottom: 0.5rem;">#inv_55667788</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--accent-amber);">2.50 CSPR</div>
+            <div style="font-size: 0.72rem; color: var(--accent-emerald); margin-top: 0.5rem;">✓ PAID & SETTLED</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

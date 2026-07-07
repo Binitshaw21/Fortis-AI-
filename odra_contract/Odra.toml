@@ -1,0 +1,9 @@
+[project]
+name = "fortis_governance_log"
+version = "0.1.0"
+
+[contracts]
+fortis_governance_log = "src/lib.rs"
+
+[backend]
+default = "casper"

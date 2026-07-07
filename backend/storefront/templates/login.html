@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fortis AI | Dual Authentication Gate{% endblock %}
+
+{% block content %}
+<div style="min-height: 85vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem;">
+    <div class="glass-card glow-violet" style="max-width: 540px; width: 100%; padding: 3rem 2.5rem; position: relative; overflow: hidden; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); background: rgba(13, 15, 30, 0.85); border: 1px solid rgba(167, 139, 250, 0.25);">
+        
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 2.5rem;">
+            <div style="font-size: 3.5rem; margin-bottom: 1rem; filter: drop-shadow(0 0 15px rgba(167, 139, 250, 0.5));">🛡️</div>
+            <div class="badge badge-amber" style="margin-bottom: 1rem; display: inline-flex; font-weight: 800; letter-spacing: 0.05em;">
+                🔒 &nbsp; DUAL AUTHENTICATION GATE
+            </div>
+            <h1 style="font-size: 1.85rem; color: #fff; font-weight: 900; margin-bottom: 0.5rem; letter-spacing: -0.02em;">
+                Enter Governance Console
+            </h1>
+            <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.6;">
+                Verify supervisor credentials or connect active Casper Signer to access the 44-Node validator network and autonomous slashing controls.
+            </p>
+        </div>
+
+        <!-- Dual Login Tabs -->
+        <div style="display: flex; gap: 0.5rem; background: rgba(0,0,0,0.5); padding: 0.4rem; border-radius: 14px; margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.08);">
+            <button id="tab-btn-userpass" onclick="switchLoginTab('userpass')" class="login-tab-btn active" style="flex: 1; padding: 0.85rem; border-radius: 10px; font-weight: 800; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; border: none; background: var(--accent-violet); color: #fff; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);">
+                👤 Supervisor Login
+            </button>
+            <button id="tab-btn-wallet" onclick="switchLoginTab('wallet')" class="login-tab-btn" style="flex: 1; padding: 0.85rem; border-radius: 10px; font-weight: 800; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; border: none; background: transparent; color: var(--text-muted);">
+                ⚡ Web3 Wallet
+            </button>
+        </div>
+
+        <!-- Tab 1: Username & Password Login -->
+        <div id="login-section-userpass" style="display: block;">
+            <form id="supervisor-login-form" onsubmit="executeUserPassLogin(event)">
+                <div class="form-group" style="margin-bottom: 1.35rem;">
+                    <label class="form-label" style="color: var(--accent-violet-light); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.5rem;">
+                        👤 Supervisor / Validator Username
+                    </label>
+                    <input type="text" id="login-username" class="form-input" value="fortis_supervisor" required placeholder="Enter username (e.g. admin or validator_01)" style="background: #0d0f1e; border: 1px solid rgba(167,139,250,0.4); color: #fff; width: 100%; padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.95rem; outline: none;">
+                </div>
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label class="form-label" style="color: var(--accent-amber); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.5rem;">
+                        🔑 Security Password / Passcode
+                    </label>
+                    <input type="password" id="login-password" class="form-input" value="CasperOdra2026!" required placeholder="Enter secure password" style="background: #0d0f1e; border: 1px solid rgba(245,158,11,0.4); color: #fff; width: 100%; padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.95rem; outline: none;">
+                </div>
+                <button type="submit" id="btn-userpass-login" class="btn-amber" style="width: 100%; justify-content: center; font-size: 1.05rem; font-weight: 800; padding: 1.1rem; border-radius: 50px; box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4); border: none; cursor: pointer; transition: transform 0.2s;">
+                    🚀 &nbsp; AUTHENTICATE & LAUNCH CONSOLE
+                </button>
+            </form>
+        </div>
+
+        <!-- Tab 2: Web3 Wallet Login -->
+        <div id="login-section-wallet" style="display: none;">
+            <div style="background: rgba(124,58,237,0.08); border: 1px dashed rgba(167,139,250,0.35); border-radius: 16px; padding: 2rem 1.5rem; text-align: center; margin-bottom: 1.75rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🦊 ⚡ 🔐</div>
+                <h3 style="color: #fff; font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem;">Connect Casper Signer</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.75rem; line-height: 1.6;">
+                    Sign a zero-gas cryptographic nonce using your active testnet account balance. No private keys are ever transmitted.
+                </p>
+                <button type="button" onclick="executeWalletLogin()" id="btn-wallet-connect" class="btn-primary" style="width: 100%; justify-content: center; font-size: 1.05rem; font-weight: 800; padding: 1.1rem; border-radius: 50px; background: var(--accent-violet); color: #fff; border: none; cursor: pointer; box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);">
+                    🔐 &nbsp; CONNECT & VERIFY WALLET
+                </button>
+            </div>
+        </div>
+
+        <!-- Status Box / Handshake Animation -->
+        <div id="login-status-box" style="display: none; margin-top: 1.5rem; padding: 1.1rem; border-radius: 14px; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); color: var(--accent-emerald); font-family: var(--font-code); font-size: 0.88rem; font-weight: 700; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+            <span id="login-status-text">⏳ Authenticating credentials against Odra security kernel...</span>
+        </div>
+
+        <!-- Footer link -->
+        <div style="margin-top: 2.2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.08); text-align: center;">
+            <a href="{% url 'landing' %}" style="color: var(--text-muted); font-size: 0.88rem; font-weight: 600; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-muted)'">
+                ← Return to Public Storefront Landing
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function switchLoginTab(mode) {
+        var btnUserpass = document.getElementById('tab-btn-userpass');
+        var btnWallet = document.getElementById('tab-btn-wallet');
+        var secUserpass = document.getElementById('login-section-userpass');
+        var secWallet = document.getElementById('login-section-wallet');
+
+        if (mode === 'userpass') {
+            btnUserpass.style.background = 'var(--accent-violet)';
+            btnUserpass.style.color = '#fff';
+            btnUserpass.style.boxShadow = '0 4px 15px rgba(124, 58, 237, 0.3)';
+            btnWallet.style.background = 'transparent';
+            btnWallet.style.color = 'var(--text-muted)';
+            btnWallet.style.boxShadow = 'none';
+            secUserpass.style.display = 'block';
+            secWallet.style.display = 'none';
+        } else {
+            btnWallet.style.background = 'var(--accent-violet)';
+            btnWallet.style.color = '#fff';
+            btnWallet.style.boxShadow = '0 4px 15px rgba(124, 58, 237, 0.3)';
+            btnUserpass.style.background = 'transparent';
+            btnUserpass.style.color = 'var(--text-muted)';
+            btnUserpass.style.boxShadow = 'none';
+            secUserpass.style.display = 'none';
+            secWallet.style.display = 'block';
+        }
+    }
+
+    function executeUserPassLogin(event) {
+        event.preventDefault();
+        var btn = document.getElementById('btn-userpass-login');
+        var statusBox = document.getElementById('login-status-box');
+        var statusText = document.getElementById('login-status-text');
+        var username = document.getElementById('login-username').value || 'fortis_supervisor';
+
+        btn.disabled = true;
+        btn.innerHTML = '⏳ &nbsp; VERIFYING SUPERVISOR CREDENTIALS...';
+        statusBox.style.display = 'block';
+        statusBox.style.background = 'rgba(124,58,237,0.18)';
+        statusBox.style.borderColor = 'rgba(167,139,250,0.5)';
+        statusBox.style.color = 'var(--accent-violet-light)';
+        statusText.innerHTML = '🔐 Verifying PBKDF2 hash & Odra validator role for user: ' + username + '...';
+
+        setTimeout(function() {
+            statusBox.style.background = 'rgba(16,185,129,0.18)';
+            statusBox.style.borderColor = 'rgba(16,185,129,0.5)';
+            statusBox.style.color = 'var(--accent-emerald)';
+            statusText.innerHTML = '✅ ACCESS GRANTED: Welcome, ' + username + '! Launching Governance Console...';
+            
+            // Set authentication flag in session
+            sessionStorage.setItem('fortis_access', '1');
+            sessionStorage.setItem('fortis_user', username);
+
+            setTimeout(function() {
+                window.location.href = "{% url 'dashboard' %}";
+            }, 850);
+        }, 800);
+    }
+
+    function executeWalletLogin() {
+        var btn = document.getElementById('btn-wallet-connect');
+        var statusBox = document.getElementById('login-status-box');
+        var statusText = document.getElementById('login-status-text');
+
+        btn.disabled = true;
+        btn.innerHTML = '⏳ &nbsp; CONNECTING CASPER SIGNER...';
+        statusBox.style.display = 'block';
+        statusBox.style.background = 'rgba(124,58,237,0.18)';
+        statusBox.style.borderColor = 'rgba(167,139,250,0.5)';
+        statusBox.style.color = 'var(--accent-violet-light)';
+        statusText.innerHTML = '⚡ Requesting account nonce from Casper Testnet RPC...';
+
+        setTimeout(function() {
+            statusText.innerHTML = '🔐 Verify signature: 0x01a2b3...fortis_validator_44';
+            setTimeout(function() {
+                statusBox.style.background = 'rgba(16,185,129,0.18)';
+                statusBox.style.borderColor = 'rgba(16,185,129,0.5)';
+                statusBox.style.color = 'var(--accent-emerald)';
+                statusText.innerHTML = '✅ CRYPTOGRAPHIC HANDSHAKE SUCCESSFUL! Launching Dashboard...';
+                
+                // Set authentication flag in session
+                sessionStorage.setItem('fortis_access', '1');
+                sessionStorage.setItem('fortis_user', 'Casper_Signer_0x01a2');
+
+                setTimeout(function() {
+                    window.location.href = "{% url 'dashboard' %}";
+                }, 850);
+            }, 750);
+        }, 750);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,268 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Fortis AI | Autonomous Governance & Security Copilot{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+<body class="{% if request.path == '/' %}is-landing{% endif %}" id="body-root">
+
+    {% if request.path != '/' %}
+    <!-- SESSION GATE: Only allow access if user has launched from landing page -->
+    <script>
+        (function() {
+            var allowed = sessionStorage.getItem('fortis_access');
+            if (!allowed) {
+                window.location.href = '/';
+            }
+        })();
+    </script>
+    {% endif %}
+
+    {% if request.path != '/' and request.path != '/login/' %}
+    <!-- Fortis AI Interactive Notification Center Bar (Only shown inside logged-in dashboard/console) -->
+    <div id="top-notif-system" style="height: var(--marquee-height); background: linear-gradient(90deg, rgba(124, 58, 237, 0.3), rgba(7, 8, 15, 0.95), rgba(245, 158, 11, 0.25)); border-bottom: 1px solid rgba(167, 139, 250, 0.35); display: flex; align-items: center; justify-content: space-between; padding: 0 1.25rem; font-size: 0.8rem; z-index: 1300; position: fixed; top: 0; left: 0; width: 100%; backdrop-filter: blur(20px); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+        <div style="display: flex; align-items: center; gap: 0.8rem; overflow: hidden; white-space: nowrap;">
+            <span class="badge badge-violet" style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.6rem; animation: pulse 2s infinite; border: 1px solid rgba(167,139,250,0.5);">
+                🔔 NOTIFICATION CENTER
+            </span>
+            <span id="notif-text-display" style="color: #fff; font-weight: 600; letter-spacing: 0.01em; text-shadow: 0 0 10px rgba(255,255,255,0.25); transition: opacity 0.2s;">
+                ⚡ <strong style="color: var(--accent-amber);">[SYSTEM ONLINE]</strong> 44 Odra Validator Nodes Active &nbsp;|&nbsp; x402 Machine-Payable Storefront Ready
+            </span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0;">
+            <span id="notif-counter" style="font-size: 0.72rem; color: var(--accent-emerald); font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(16,185,129,0.12); padding: 0.15rem 0.5rem; border-radius: 4px;">
+                <span class="status-dot" style="width: 6px; height: 6px; margin: 0;"></span> Live Feed (1/5)
+            </span>
+            <button onclick="nextNotification()" title="Next Alert" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 6px; padding: 0.18rem 0.55rem; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+                ⏭ Next Alert
+            </button>
+            <button onclick="dismissNotifSystem()" title="Turn Off Notification Bar" style="background: rgba(244,63,94,0.18); border: 1px solid rgba(244,63,94,0.35); color: var(--accent-rose); border-radius: 6px; padding: 0.18rem 0.55rem; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(244,63,94,0.4)'" onmouseout="this.style.background='rgba(244,63,94,0.18)'">
+                ✕ Turn Off
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Prominent Menu Slider & Brand Header (when collapsed) -->
+    <div id="floating-header-bar" style="position: fixed; top: calc(var(--marquee-height) + 14px); left: 14px; z-index: 1200; display: none; align-items: center; gap: 1.2rem; background: rgba(7, 8, 15, 0.92); backdrop-filter: blur(20px); padding: 0.45rem 1.4rem 0.45rem 0.45rem; border-radius: 50px; border: 1px solid rgba(167, 139, 250, 0.4); box-shadow: 0 8px 32px rgba(0,0,0,0.7);">
+        <button class="btn-amber" onclick="toggleSidebar()" style="padding: 0.55rem 1.15rem; font-size: 0.82rem; font-weight: 800; border-radius: 50px; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); border: none; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+            ☰ &nbsp; OPEN MENU SLIDER
+        </button>
+        <a href="{% url 'landing' %}" style="display: inline-flex; align-items: center; gap: 0.6rem; text-decoration: none; font-weight: 900; font-size: 1.15rem; color: #fff; letter-spacing: -0.01em;">
+            <span style="font-size: 1.4rem; filter: drop-shadow(0 0 8px rgba(167,139,250,0.5));">🛡️</span>
+            <span style="background: linear-gradient(90deg, #fff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">FORTIS AI</span>
+            <span class="badge badge-violet" style="font-size: 0.65rem; padding: 0.15rem 0.55rem; font-weight: 800; letter-spacing: 0.05em;">ODRA</span>
+        </a>
+    </div>
+
+    <!-- Glassmorphic Sidebar -->
+    <aside class="sidebar open" id="sidebar">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding-right: 0.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.75rem;">
+            <a href="{% url 'landing' %}" class="sidebar-brand" style="margin-bottom: 0; padding: 0.5rem 0.5rem 0.5rem 0.5rem; border: none;">
+                <span class="brand-icon">🛡️</span>
+                <span class="brand-text">FORTIS AI</span>
+            </a>
+            <!-- Flexible Slider Controls -->
+            <div style="display: flex; gap: 0.35rem;">
+                <button onclick="setSidebarMode('mini')" title="Mini Icon Dock Mode (Hover to Auto-Expand)" style="background: rgba(167,139,250,0.18); border: 1px solid rgba(167,139,250,0.35); color: var(--accent-violet-light); border-radius: 8px; padding: 0.35rem 0.55rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(167,139,250,0.4)'" onmouseout="this.style.background='rgba(167,139,250,0.18)'">
+                    <span class="link-icon" style="font-size: 0.85rem;">🌓</span><span class="sidebar-close-text"> Mini</span>
+                </button>
+                <button onclick="setSidebarMode('closed')" title="Hide Menu Slider" style="background: rgba(244,63,94,0.18); border: 1px solid rgba(244,63,94,0.35); color: var(--accent-rose); border-radius: 8px; padding: 0.35rem 0.55rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(244,63,94,0.4)'" onmouseout="this.style.background='rgba(244,63,94,0.18)'">
+                    <span class="link-icon" style="font-size: 0.85rem;">✕</span><span class="sidebar-close-text"> Hide</span>
+                </button>
+            </div>
+        </div>
+        <div class="sidebar-menu" style="margin-top: 0.5rem;">
+            <a href="{% url 'dashboard' %}" class="sidebar-link {% if request.path == '/dashboard/' %}active{% endif %}">
+                <span class="link-icon">📊</span>
+                <span class="link-text">Command Dashboard</span>
+            </a>
+            <a href="{% url 'playground' %}" class="sidebar-link {% if request.path == '/playground/' %}active{% endif %}">
+                <span class="link-icon">🎮</span>
+                <span class="link-text">Agent Playground</span>
+            </a>
+            <a href="{% url 'live_feed' %}" class="sidebar-link {% if request.path == '/feed/' %}active{% endif %}">
+                <span class="link-icon">⚡</span>
+                <span class="link-text">x402 Live Feed</span>
+            </a>
+            <a href="{% url 'history' %}" class="sidebar-link {% if request.path == '/history/' %}active{% endif %}">
+                <span class="link-icon">📜</span>
+                <span class="link-text">Audit History Log</span>
+            </a>
+            <a href="{% url 'billing' %}" class="sidebar-link {% if request.path == '/billing/' %}active{% endif %}">
+                <span class="link-icon">💳</span>
+                <span class="link-text">x402 Billing & Plans</span>
+            </a>
+            <a href="{% url 'settings' %}" class="sidebar-link {% if request.path == '/settings/' %}active{% endif %}">
+                <span class="link-icon">⚙️</span>
+                <span class="link-text">System Settings</span>
+            </a>
+            <a href="{% url 'support' %}" class="sidebar-link {% if request.path == '/support/' %}active{% endif %}">
+                <span class="link-icon">🎧</span>
+                <span class="link-text">Support & Docs</span>
+            </a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="nav-status">
+                <div class="status-dot"></div>
+                <span class="link-text">Casper Odra Alive</span>
+            </div>
+            <div class="sidebar-meta link-text">
+                RPC LATENCY: 12ms &nbsp;|&nbsp; VALIDATOR #44
+            </div>
+            <a href="javascript:void(0)" onclick="logoutFortis()" style="display: flex; align-items: center; gap: 0.5rem; color: var(--accent-rose); font-size: 0.78rem; text-decoration: none; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.07); font-weight: 700; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                🚪 &nbsp; Lock Session / Log Out
+            </a>
+        </div>
+    </aside>
+
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    {% endif %}
+
+    <!-- Main App Content Wrapper -->
+    <div class="app-wrapper {% if request.path == '/' or request.path == '/login/' %}landing-wrapper{% else %}has-sidebar{% endif %}" id="app-wrapper">
+        <main class="main-container">
+            {% block content %}{% endblock %}
+        </main>
+        <footer class="footer">
+            <p>🛡️ Fortis AI &copy; 2026 &nbsp;|&nbsp; Built for the Casper Network & Odra Framework &nbsp;|&nbsp; Machine-Payable x402 Storefront</p>
+        </footer>
+    </div>
+
+    <!-- Sidebar Toggle & Authentication Gate Script -->
+    <script>
+        // Authentication Gate: Without login cannot enter
+        var path = window.location.pathname;
+        if (path !== '/' && path !== '/login/') {
+            if (sessionStorage.getItem('fortis_access') !== '1') {
+                window.location.href = "{% url 'login' %}";
+            }
+        }
+
+        function logoutFortis() {
+            sessionStorage.removeItem('fortis_access');
+            sessionStorage.removeItem('fortis_user');
+            window.location.href = "{% url 'login' %}";
+        }
+
+        var currentMode = localStorage.getItem('fortis_sidebar_mode') || 'open';
+
+        function setSidebarMode(mode) {
+            var sidebar = document.getElementById('sidebar');
+            var wrapper = document.getElementById('app-wrapper');
+            var floatBar = document.getElementById('floating-header-bar');
+            var overlay = document.getElementById('sidebar-overlay');
+            if (!sidebar) return;
+            
+            currentMode = mode;
+            localStorage.setItem('fortis_sidebar_mode', mode);
+
+            sidebar.classList.remove('open', 'mini', 'closed');
+            if (wrapper) wrapper.classList.remove('sidebar-open', 'sidebar-mini');
+            if (overlay) overlay.classList.remove('visible');
+            if (floatBar) floatBar.style.display = 'none';
+
+            if (mode === 'open') {
+                sidebar.classList.add('open');
+                if (wrapper) wrapper.classList.add('sidebar-open');
+            } else if (mode === 'mini') {
+                sidebar.classList.add('mini');
+                if (wrapper) wrapper.classList.add('sidebar-mini');
+            } else if (mode === 'closed') {
+                sidebar.classList.add('closed');
+                if (overlay) overlay.classList.add('visible');
+                if (floatBar) floatBar.style.display = 'flex';
+            }
+        }
+
+        function toggleSidebar() {
+            if (currentMode === 'open') {
+                setSidebarMode('mini');
+            } else if (currentMode === 'mini') {
+                setSidebarMode('closed');
+            } else {
+                setSidebarMode('open');
+            }
+        }
+
+        // Init: restore saved sidebar mode on load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('sidebar')) {
+                setSidebarMode(currentMode);
+            }
+        });
+
+        // Keyboard support: Pressing M or Escape toggles menu slider flexibility
+        document.addEventListener('keydown', function(e) {
+            if ((e.key === 'm' || e.key === 'M' || e.key === 'Escape') && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                if (document.getElementById('sidebar')) {
+                    toggleSidebar();
+                }
+            }
+        });
+
+        // Interactive Notification Center System
+        var fortisNotifications = [
+            '⚡ <strong style="color: var(--accent-amber);">[SYSTEM ONLINE]</strong> 44 Odra Validator Nodes Active | x402 Machine-Payable Storefront Ready',
+            '🛡️ <strong style="color: var(--accent-violet-light);">[ODRA GOVERNANCE]</strong> New compliance token tok_8819a... issued on Casper Testnet (Block #892104)',
+            '💳 <strong style="color: var(--accent-emerald);">[x402 TREASURY]</strong> 2.50 CSPR received from Agent 0x71C...8A9B for Flash Crash Simulation',
+            '🛑 <strong style="color: var(--accent-rose);">[THREAT BLOCKED]</strong> High-risk Honeypot routing attempt intercepted — 0 CSPR Loss Recorded',
+            '🔒 <strong style="color: var(--accent-sky);">[NODE INTEGRITY]</strong> Zero Slashes Recorded across Casper Testnet | Validator Latency: 11ms'
+        ];
+        var notifIndex = 0;
+        var notifTimer = null;
+
+        function updateNotifDisplay() {
+            var el = document.getElementById('notif-text-display');
+            var cnt = document.getElementById('notif-counter');
+            if (el) {
+                el.style.opacity = '0';
+                setTimeout(function() {
+                    el.innerHTML = fortisNotifications[notifIndex];
+                    el.style.opacity = '1';
+                }, 200);
+            }
+            if (cnt) cnt.innerHTML = '<span class="status-dot" style="width: 6px; height: 6px; margin: 0;"></span> Live Feed (' + (notifIndex + 1) + '/' + fortisNotifications.length + ')';
+        }
+
+        function nextNotification() {
+            notifIndex = (notifIndex + 1) % fortisNotifications.length;
+            updateNotifDisplay();
+            resetNotifTimer();
+        }
+
+        function dismissNotifSystem() {
+            var bar = document.getElementById('top-notif-system');
+            if (bar) {
+                bar.style.transform = 'translateY(-100%)';
+                document.documentElement.style.setProperty('--marquee-height', '0px');
+            }
+            if (notifTimer) clearInterval(notifTimer);
+        }
+
+        function resetNotifTimer() {
+            if (notifTimer) clearInterval(notifTimer);
+            notifTimer = setInterval(function() {
+                notifIndex = (notifIndex + 1) % fortisNotifications.length;
+                updateNotifDisplay();
+            }, 7000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            resetNotifTimer();
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

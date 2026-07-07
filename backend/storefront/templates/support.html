@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fortis AI | Support & Developer Integration Docs{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>🎧 Developer Support & Odra Integration</h1>
+    <p>Integrate Fortis AI's autonomous security guardrail into your DeFi agent workflow in under 5 minutes using Casper's HTTP 402 protocol and the Odra Rust Framework.</p>
+</div>
+
+<div class="bento-grid" style="grid-template-columns: repeat(2, 1fr); gap: 2rem;">
+    <!-- Python SDK Guide -->
+    <div class="glass-card glow-violet bento-card-content" style="padding: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.07);">
+            <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">
+                🐍 &nbsp; Python Agent Integration — Quickstart
+            </div>
+            <span class="badge badge-go">SDK V1.0 🟢</span>
+        </div>
+
+        <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.65; margin-bottom: 1.25rem;">
+            Before executing any transaction on Casper, your AI agent sends a scan request. If HTTP 402 is returned, automatically pay the CSPR invoice and attach the proof header:
+        </p>
+
+        <div class="terminal-console" style="flex: 1; font-size: 0.83rem;">
+            <div style="color: var(--accent-violet-light);">import requests</div>
+            <div style="color: var(--text-muted); margin-top: 0.5rem;"># 1. Request Compliance Verification from Fortis AI</div>
+            <div style="color: var(--accent-sky);">res = requests.post("http://fortis.casper:8000/api/v1/scan/", json=payload)</div>
+            <div style="color: var(--text-muted); margin-top: 0.5rem;">if res.status_code == 402:</div>
+            <div style="color: var(--accent-amber); padding-left: 1rem;">invoice = res.json()["invoice"]</div>
+            <div style="color: var(--accent-emerald); padding-left: 1rem;">proof = casper_wallet.pay(invoice["treasury_address"], invoice["amount_cspr"])</div>
+            <div style="color: var(--text-muted); padding-left: 1rem;"># 2. Re-submit with x402 Payment Proof</div>
+            <div style="color: var(--accent-sky); padding-left: 1rem;">res = requests.post(..., headers={"X-Casper-402-Proof": proof})</div>
+            <div style="color: var(--accent-emerald); margin-top: 0.5rem;">token = res.json()["compliance_token"]  # Proceed with trade!</div>
+        </div>
+    </div>
+
+    <!-- Odra Smart Contract Bridge -->
+    <div class="glass-card glow-sky bento-card-content" style="padding: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.07);">
+            <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">
+                🦀 &nbsp; Odra Framework Smart Contract Verification
+            </div>
+            <span class="badge badge-amber">RUST KERNEL 🟠</span>
+        </div>
+
+        <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.65; margin-bottom: 1.25rem;">
+            In your target DeFi contract on Casper, invoke the Odra bridge to verify the immutable SHA-256 compliance hash before releasing yield:
+        </p>
+
+        <div class="terminal-console" style="flex: 1; font-size: 0.83rem;">
+            <div style="color: var(--text-muted);">#[odra::module]</div>
+            <div style="color: var(--text-muted);">impl YieldVault {</div>
+            <div style="color: var(--accent-sky); padding-left: 1rem;">pub fn execute_trade(&mut self, token_jwt: String, proof_hash: String) {</div>
+            <div style="color: var(--accent-violet-light); padding-left: 2rem;">let is_verified = self.fortis_log.verify_hash(proof_hash);</div>
+            <div style="color: var(--accent-amber); padding-left: 2rem;">if !is_verified {</div>
+            <div style="color: var(--accent-rose); padding-left: 3rem;">odra::revert(Error::SecurityRiskDetected);</div>
+            <div style="color: var(--accent-amber); padding-left: 2rem;">}</div>
+            <div style="color: var(--accent-emerald); padding-left: 2rem;">// ✅ Release capital safely!</div>
+            <div style="color: var(--accent-sky); padding-left: 1rem;">}</div>
+            <div style="color: var(--text-muted);">}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Reference Table -->
+<div class="glass-card glow-amber" style="margin-top: 1.5rem; position: relative; overflow: hidden;">
+    <div class="panel-header">
+        <div class="panel-title"><span>📋</span> API Quick Reference</div>
+        <span class="badge badge-amber">REST API v1.0</span>
+    </div>
+    <div style="overflow-x: auto; padding: 1rem 1.5rem;">
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Method</th>
+                    <th>Purpose</th>
+                    <th>x402 Required?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="font-family: var(--font-code); color: var(--accent-violet-light);">/api/v1/scan/</td>
+                    <td><span class="badge badge-amber">POST</span></td>
+                    <td style="color: var(--text-muted);">Run dual-threat scan + issue compliance token</td>
+                    <td><span class="badge badge-go">YES — 2.50 CSPR</span></td>
+                </tr>
+                <tr>
+                    <td style="font-family: var(--font-code); color: var(--accent-violet-light);">/api/v1/verify/</td>
+                    <td><span class="badge badge-amber">POST</span></td>
+                    <td style="color: var(--text-muted);">Verify a signed compliance JWT token</td>
+                    <td><span class="badge" style="background: rgba(148,163,184,0.1); border: 1px solid rgba(148,163,184,0.3); color: var(--text-muted);">FREE</span></td>
+                </tr>
+                <tr>
+                    <td style="font-family: var(--font-code); color: var(--accent-violet-light);">/api/v1/stats/</td>
+                    <td><span class="badge badge-amber">GET</span></td>
+                    <td style="color: var(--text-muted);">Live metrics for dashboard charts</td>
+                    <td><span class="badge" style="background: rgba(148,163,184,0.1); border: 1px solid rgba(148,163,184,0.3); color: var(--text-muted);">FREE</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
