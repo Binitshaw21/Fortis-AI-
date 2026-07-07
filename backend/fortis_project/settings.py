@@ -3,6 +3,7 @@ Django settings for fortis_project.
 """
 from pathlib import Path
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -64,12 +65,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'fortis_project.wsgi.application'
 ASGI_APPLICATION = 'fortis_project.asgi.application'
 
-# Database - Default SQLite for fast out-of-the-box Windows testnet simulation
+# Database - Dynamically read DATABASE_URL from Railway/Neon environment with local SQLite fallback
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL', f'sqlite:///{BASE_DIR / "db.sqlite3"}'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 # Password validation
